@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SOIS</title>
+
+
+	<link rel="stylesheet" href="main.css">	
+
+</head> 
+<body>	
+	   
+
+
+	        <pre style="text-align:center" > Use W para Arriba
+ Use S para Abajo
+ Use D para la Derecha
+ Use A para la Izquiera
+ F5 para Reiniciar</pre>
+ 
+ 
+<Input Type="SUbmit" Value="Pausa" id="pause" onClick="Pause();"> 
+<canvas id="myCanvas" width="640" height="480"> 
+
+</canvas> 
+<div id="info"></div> 
+<div id="bpoint"></div> 
+	
+	<script type="text/javascript"> 
+
+var c=document.getElementById("myCanvas");
+var m=document.getElementById("info"); 
+var bpi=document.getElementById("bpoint"); 
+var ctx=c.getContext("2d");
+var m1 = 10;
+var m2 = 10;
+var direction = "right";
+var t;
+var dt;
+var xr = 0;
+var yr = 0;
+var x = 0;
+var y = 0;
+var gg;
+var score = 0;
+var bpoint = 0;
+var bpt = 0;
+var bptime = 0;
+var brx=0;
+var bry=0;
+var snakelength = 15;
+var index = 0;
+var pause = 0;
+var Jugar=0;
+var snakex = new Array();
+var executing = 0;
+
+var snakepos = new Array(307200);
+var rx=Math.floor(Math.random()*630);
+var ry=Math.floor(Math.random()*470);
+//ctx.fillStyle = "rgb(255,0,0)";
+ctx.fillRect(rx, ry, 10, 10);
+m.innerHTML = "<b>Puntos:</b> "+score;
+
+
+document.onkeypress=press;
+//////////////////////////////////
+function press(e){
+ 
+var key;
+ 
+if (window.event) key = window.event.keyCode;
+else if (e) key = e.which;
+ 
+ 
+if((key == 97 || key == 65) && dt != "right"){
+direction = "left";
+}
+ 
+if((key == 100 || key == 68) && dt != "left"){
+direction = "right";
+}
+ 
+if((key == 119 || key == 87) && dt != "down"){
+direction = "up";
+}
+ 
+if((key == 115 || key == 83) && dt != "up"){
+direction = "down";
+} 
+ 
+ 
+}
+ 
+//////////////////////////////////
+ctx.fillStyle = "rgb(0,0,0)";
+ 
+t=setTimeout("move()",1);
+
+  
+function move(){
+t=setTimeout("move()",1);
+
+ 
+ 
+if(direction == "right"){
+m1 = m1+1;
+}else if(direction == "left"){
+m1 = m1-1;
+}else if(direction == "up"){
+m2 = m2 - 1;
+}else if(direction == "down"){
+m2 = m2 + 1;
+}
+ 
+if(m1 > 640){
+m1 = 2;
+}else if(m1 < 2){
+m1 = 640;
+}else if(m2 > 480){
+m2 = 2;
+}else if(m2 < 2){
+m2 = 480;
+}
+ 
+ 
+ 
+
+x = m1;
+y = m2;
+ 
+ 
+ 
+if(x > (rx-5) && x < (rx+10) && y > (ry-5) && y < (ry+10)){
+score = score + 30;
+bpoint = bpoint + 1;
+m.innerHTML = "<b>Puntos:</b> "+score;
+ctx.clearRect(rx,ry,10,10);
+rx=Math.floor(Math.random()*630);
+ry=Math.floor(Math.random()*470);
+//ctx.fillStyle = "rgb(255,0,0)";
+ctx.fillRect(rx, ry, 10, 10);
+//ctx.fillStyle = "rgb(0,0,0)";
+snakelength = snakelength + 30;
+}
+ 
+
+if(bpoint == 10){
+brx=Math.floor(Math.random()*630);
+bry=Math.floor(Math.random()*470);
+//ctx.fillStyle = "rgb(255,0,0)";
+ctx.fillRect(brx, bry, 15, 15);
+bpoint = 0;
+bpt = 1;
+}
+
+
+if(bpt == 1){
+bptime = bptime + 1;
+bpi.innerHTML = bptime;
+}
+
+
+if(bptime > 500){
+bpt = 0;
+bptime = 0;
+//bpoint = 0;
+ctx.clearRect(brx,bry,15,15);
+bpi.innerHTML = "";
+}
+ 
+if(x > (brx-5) && x < (brx+15) && y > (bry-5) && y < (bry+15) && bpt == 1){
+score = score + parseInt((bptime*100/500)/100*400);
+m.innerHTML = "<b>Puntos:</b> "+score;
+ctx.clearRect(brx,bry,15,15);
+bpt = 0;
+bptime = 0;
+bpi.innerHTML = "";
+}
+
+
+
+
+///////////////////////////////////////////////
+if(snakepos[((m2) * 640) + (m1)] == true){
+//alert("Snake Hit");
+stopmove();
+ctx.clearRect(0,0,640,480);
+ctx.font = '400 36px/2 Unknown Font, sans-serif';
+ctx.fillText("Juego terminado tu puntaje es: "+score,1,100);
+}
+snakepos[((m2) * 640) + (m1)] = true;
+///////////////////////////////////////////////
+ 
+
+
+ 
+snakex.push(m1 +(640*m2));
+
+if(index > 30){
+snakex.splice(0,snakex.length-snakelength-2);
+index = 0;
+}
+gg = snakex[snakex.length-snakelength];
+xr = gg - (640*parseInt(gg/640));
+yr = parseInt(gg/640);
+
+
+
+
+//ctx.fillStyle = "rgb(0,0,0)";
+
+
+if(!xr){
+xr = 0;
+}
+
+if(!yr){
+yr = 0;
+}
+
+ctx.clearRect(xr,yr,2,2);
+ctx.fillRect(m1, m2, 2, 2); 
+ctx.strokeRect(0, 0, 640, 480);  
+
+
+
+snakepos[((yr) * 640) + (xr)] = false;
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+index = index + 1; 
+dt = direction;
+
+
+
+
+}
+
+function stopmove(){
+clearTimeout(t);
+}
+
+
+var pb = document.getElementById("pause");
+function Pause(){
+if(pause == 0){
+pause = 1;
+pb.value = "Jugar";
+clearTimeout(t);
+}else{
+pause = 0;
+pb.value = "Pausa";
+t=setTimeout("move()",1);
+}
+
+
+}
+
+
+</script> 
+</body> 
+</html>
